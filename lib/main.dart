@@ -14,6 +14,10 @@ void main() {
         primarySwatch: Colors.blue,
       ),
       home: const HomePage(),
+      routes: {
+        '/login/': (context) => const LoginView(),
+        '/register/': (context) => const RegisterView(),
+      },
     )
     );
 }
@@ -23,11 +27,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Home Page")
-      ),
-      body: FutureBuilder(
+    return FutureBuilder(
         future: Firebase.initializeApp(
                       options: DefaultFirebaseOptions.currentPlatform,
                     ),
@@ -35,13 +35,13 @@ class HomePage extends StatelessWidget {
           switch (snapshot.connectionState){
             case ConnectionState.done:
               final user = FirebaseAuth.instance.currentUser;
-              print(user);
+              //print(user);
               if(user == null){
-                print("You need to login/register first");
+                return const LoginView();
               } else if (user.emailVerified){
-                print("Welcome to Homepage");
+                //print("Welcome to Homepage");
               } else{
-                print("Please verify your email first");
+                //print("Please verify your email first");
                 return const VerifyEmailView();
               }
               return const Text("Done");
@@ -49,7 +49,6 @@ class HomePage extends StatelessWidget {
               return const Text("Loading...");       
           }
         },
-      ),
-    );
+      );
   }
 }

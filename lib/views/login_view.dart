@@ -11,19 +11,18 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-
   late final TextEditingController _email;
   late final TextEditingController _password;
 
   @override
-  void initState(){
+  void initState() {
     _email = TextEditingController();
     _password = TextEditingController();
     super.initState();
   }
 
   @override
-  void dispose(){
+  void dispose() {
     _email.dispose();
     _password.dispose();
     super.dispose();
@@ -35,59 +34,50 @@ class _LoginViewState extends State<LoginView> {
       appBar: AppBar(
         title: const Text("Login"),
       ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-                      options: DefaultFirebaseOptions.currentPlatform,
-                    ),
-        builder: (context, snapshot){
-          switch (snapshot.connectionState){
-            case ConnectionState.done:
-              return Column(
-                children: [
-                  TextField(
-                      controller: _email,
-                      keyboardType: TextInputType.emailAddress,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      decoration: const InputDecoration(
-                      hintText: "Enter your Email"
-                    ),
-                  ),
-                  TextField(
-                      controller: _password,
-                      obscureText: true,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      decoration: const InputDecoration(
-                        hintText: "Enter your password"
-                    ),
-                  ),
-                  Center(
-                    child: TextButton(
-                      onPressed: () async{
-                        final email = _email.text;
-                        final password = _password.text;
-                        print(email + password);
-            
-                        try {
-                            final userCred = await FirebaseAuth.instance.signInWithEmailAndPassword(
-                              email: email, 
-                              password: password
-                            );
-                            print(userCred);
-                        } on FirebaseAuthException catch (e) {
-                              print(e);
-                        }
-                      }, 
-                      child: const Text("Login"),
-                    ),
-                  ),
-                ],
-              ); 
-            default:
-              return const Text("Loading...");       
-          }
-        },
+      body: Column(
+        children: [
+          TextField(
+            controller: _email,
+            keyboardType: TextInputType.emailAddress,
+            enableSuggestions: false,
+            autocorrect: false,
+            decoration: const InputDecoration(hintText: "Enter your Email"),
+          ),
+          TextField(
+            controller: _password,
+            obscureText: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            decoration: const InputDecoration(hintText: "Enter your password"),
+          ),
+          Center(
+            child: TextButton(
+              onPressed: () async {
+                final email = _email.text;
+                final password = _password.text;
+                print(email + password);
+    
+                try {
+                  final userCred = await FirebaseAuth.instance
+                      .signInWithEmailAndPassword(
+                          email: email, password: password);
+                  print(userCred);
+                } on FirebaseAuthException catch (e) {
+                  print(e);
+                }
+              },
+              child: const Text("Login"),
+            ),
+          ),
+          Center(
+            child: TextButton(
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil('/register/', (route) => false);
+              },
+              child: const Text("Not registered yet? Register here"),
+            ),
+          ),
+        ],
       ),
     );
   }

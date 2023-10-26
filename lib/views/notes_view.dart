@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
+import 'package:notes/constants/routes.dart';
+
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
 
@@ -24,7 +26,7 @@ class _NotesViewState extends State<NotesView> {
                 if (shouldLogOut) {
                   // ignore: use_build_context_synchronously
                   Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/login/',
+                    loginRoute,
                     (route) => false,
                   );
                 }

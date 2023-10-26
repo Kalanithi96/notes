@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
+import 'package:notes/constants/routes.dart';
+
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
 
@@ -60,7 +62,7 @@ class _RegisterViewState extends State<RegisterView> {
                       .createUserWithEmailAndPassword(
                           email: email, password: password);
                   Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/notes/',
+                    notesRoute,
                     (route) => false,
                   );
                   devtools.log(userCred.toString());
@@ -88,7 +90,7 @@ class _RegisterViewState extends State<RegisterView> {
             child: TextButton(
               onPressed: () {
                 Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/login/',
+                  loginRoute,
                   (route) => false,
                 );
               },

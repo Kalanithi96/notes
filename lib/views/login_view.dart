@@ -66,6 +66,7 @@ class _LoginViewState extends State<LoginView> {
                       .signInWithEmailAndPassword(
                           email: email, password: password);
                   devtools.log(userCred.toString());
+                  
                   Navigator.of(context).pushNamedAndRemoveUntil(
                     notesRoute,
                     (route) => false,
@@ -76,7 +77,7 @@ class _LoginViewState extends State<LoginView> {
                     "Error: ${e.code}",
                   );
                   devtools.log(e.toString());
-                } on Exception catch (e) {
+                } catch (e) {
                   await showErrorDialog(
                     context,
                     "Error: ${e.toString()}",

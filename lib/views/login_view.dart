@@ -66,11 +66,16 @@ class _LoginViewState extends State<LoginView> {
                       .signInWithEmailAndPassword(
                           email: email, password: password);
                   devtools.log(userCred.toString());
-                  
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    notesRoute,
-                    (route) => false,
-                  );
+                  if (userCred.user?.emailVerified ?? false) {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      notesRoute,
+                      (route) => false,
+                    );
+                  } else {
+                    Navigator.of(context).pushNamed(
+                      verifyEmailRoute,
+                    );
+                  }
                 } on FirebaseAuthException catch (e) {
                   await showErrorDialog(
                     context,

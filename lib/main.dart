@@ -6,7 +6,7 @@ import 'package:notes/views/email_verify.dart';
 import 'package:notes/views/login_view.dart';
 import 'package:notes/views/notes_view.dart';
 import 'package:notes/views/register_view.dart';
-
+import 'dart:developer' as devtools show log;
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
@@ -18,6 +18,7 @@ void main() {
       routes: {
         '/login/': (context) => const LoginView(),
         '/register/': (context) => const RegisterView(),
+        '/notes/': (context) => const NotesView(),
       },
     )
     );
@@ -36,14 +37,14 @@ class HomePage extends StatelessWidget {
           switch (snapshot.connectionState){
             case ConnectionState.done:
               final user = FirebaseAuth.instance.currentUser;
-              //print(user);
+              devtools.log(user.toString());
               if(user == null){
                 return const LoginView();
               } else if (user.emailVerified){
-                //print("Welcome to Homepage");
+                //devtools.log("Welcome to Homepage");
                 return const NotesView();
               } else{
-                //print("Please verify your email first");
+                //devtools.log("Please verify your email first");
                 return const VerifyEmailView();
               }
             default: 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:notes/firebase_options.dart';
 import 'package:notes/views/email_verify.dart';
 import 'package:notes/views/login_view.dart';
+import 'package:notes/views/notes_view.dart';
 import 'package:notes/views/register_view.dart';
 
 void main() {
@@ -40,13 +41,13 @@ class HomePage extends StatelessWidget {
                 return const LoginView();
               } else if (user.emailVerified){
                 //print("Welcome to Homepage");
+                return const NotesView();
               } else{
                 //print("Please verify your email first");
                 return const VerifyEmailView();
               }
-              return const Text("Done");
             default: 
-              return const Text("Loading...");       
+              return const CircularProgressIndicator();
           }
         },
       );

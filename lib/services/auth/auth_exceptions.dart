@@ -8,7 +8,7 @@ class InvalidEmailException implements Exception {}
 
 // Login Exceptions
 
-class InvalidCredentials implements Exception {}
+class InvalidCredentialsException implements Exception {}
 
 // Generic
 

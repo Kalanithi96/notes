@@ -5,7 +5,6 @@ import 'package:notes/firebase_options.dart';
 import 'package:notes/services/auth/auth_exceptions.dart';
 import 'package:notes/services/auth/auth_provider.dart';
 import 'package:notes/services/auth/auth_user.dart';
-
 class FirebaseAuthProvider implements AuthProvider {
   @override
   AuthUser? get currentUser {
@@ -35,9 +34,11 @@ class FirebaseAuthProvider implements AuthProvider {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == "INVALID_LOGIN_CREDENTIALS") {
-        throw InvalidCredentials();
+        throw InvalidCredentialsException();
       } else if (e.code == "channel-error") {
         throw EmptyChannelException();
+      } else if (e.code == "invalid-email"){
+        throw InvalidEmailException();
       } else {
         throw GenericAuthException();
       }

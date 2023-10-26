@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
 
 import 'package:notes/constants/routes.dart';
+import 'package:notes/services/auth/auth_exceptions.dart';
+import 'package:notes/services/auth/auth_service.dart';
 import 'package:notes/utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
@@ -61,34 +61,39 @@ class _RegisterViewState extends State<RegisterView> {
                 final password = _password.text;
 
                 try {
-                  await FirebaseAuth.instance
-                      .createUserWithEmailAndPassword(
-                          email: email, password: password);
+                  await AuthService.firebase().register(
+                    email: email,
+                    password: password,
+                  );
+                  await AuthService.firebase().sendEmailVerification();
                   Navigator.of(context).pushNamed(
                     verifyEmailRoute,
                   );
-                } on FirebaseAuthException catch (e) {
-                  switch (e.code) {
-                    case "email-already-in-use":
-                      devtools.log("Email already registered");
-                      await showErrorDialog(context, "Email already registered");
-                      break;
-                    case "weak-password":
-                      devtools.log("Use a stronger password");
-                      await showErrorDialog(context, "Use a stronger password");
-                      break;
-                    case "invalid-email":
-                      devtools.log("Use a valid email");
-                      await showErrorDialog(context, "Use a valid email");
-                      break;
-                    default:
-                      devtools.log("Something Bad happened");
-                      await showErrorDialog(context, "Error: ${e.code}");
-                      devtools.log(e.toString());
-                  }
-                } catch (e) {
-                  await showErrorDialog(context, "Error: ${e.toString()}");
-                  devtools.log(e.toString());
+                } on EmailAlreadyInUseException catch (_) {
+                  await showErrorDialog(
+                    context,
+                    "Email already registered",
+                  );
+                } on WeakPasswordException catch (_) {
+                  await showErrorDialog(
+                    context,
+                    "Use a stronger password",
+                  );
+                } on InvalidEmailException catch (_) {
+                  await showErrorDialog(
+                    context,
+                    "Use a valid email",
+                  );
+                } on EmptyChannelException catch (_) {
+                  await showErrorDialog(
+                    context,
+                    "Fields cannot be empty",
+                  );
+                } on GenericAuthException catch (_) {
+                  await showErrorDialog(
+                    context,
+                    "Error in registering",
+                  );
                 }
               },
               child: const Text("Register"),

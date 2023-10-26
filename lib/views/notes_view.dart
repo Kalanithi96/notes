@@ -3,6 +3,7 @@ import 'dart:developer' as devtools show log;
 
 import 'package:notes/constants/routes.dart';
 import 'package:notes/enums/menu_action.dart';
+import 'package:notes/services/auth/auth_service.dart';
 import 'package:notes/utilities/show_logout_dialog.dart';
 
 class NotesView extends StatefulWidget {
@@ -26,6 +27,7 @@ class _NotesViewState extends State<NotesView> {
                 final shouldLogOut = await showLogOutDialogue(context);
                 devtools.log(shouldLogOut.toString());
                 if (shouldLogOut) {
+                  await AuthService.firebase().logOut();
                   // ignore: use_build_context_synchronously
                   Navigator.of(context).pushNamedAndRemoveUntil(
                     loginRoute,

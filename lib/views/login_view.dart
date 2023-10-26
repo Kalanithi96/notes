@@ -1,10 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:notes/constants/routes.dart';
+import 'package:notes/services/auth/auth_exceptions.dart';
+import 'package:notes/services/auth/auth_service.dart';
 import 'package:notes/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -59,14 +60,13 @@ class _LoginViewState extends State<LoginView> {
               onPressed: () async {
                 final email = _email.text;
                 final password = _password.text;
-                devtools.log(email + password);
-
                 try {
-                  final userCred = await FirebaseAuth.instance
-                      .signInWithEmailAndPassword(
-                          email: email, password: password);
-                  devtools.log(userCred.toString());
-                  if (userCred.user?.emailVerified ?? false) {
+                  final user = await AuthService.firebase().logIn(
+                    email: email,
+                    password: password,
+                  );
+                  devtools.log(user.toString());
+                  if (user.isEmailVerified) {
                     Navigator.of(context).pushNamedAndRemoveUntil(
                       notesRoute,
                       (route) => false,
@@ -76,19 +76,28 @@ class _LoginViewState extends State<LoginView> {
                       verifyEmailRoute,
                     );
                   }
-                } on FirebaseAuthException catch (e) {
-                  //INVALID_LOGIN_CREDENTIALS
+                } on InvalidCredentialsException catch (_) {
                   await showErrorDialog(
                     context,
-                    "Error: ${e.code}",
+                    "Invalid Credentials",
                   );
-                  devtools.log(e.toString());
-                } catch (e) {
+                } on EmptyChannelException catch (_) {
                   await showErrorDialog(
                     context,
-                    "Error: ${e.toString()}",
+                    "Fields cannot be empty",
                   );
-                  devtools.log(e.toString());
+                } on InvalidEmailException catch (_) {
+                  
+                  await showErrorDialog(
+                    context,
+                    "Invalid Email",
+                  );
+                } on GenericAuthException catch (_) {
+                  
+                  await showErrorDialog(
+                    context,
+                    "Authentication error",
+                  );
                 }
               },
               child: const Text("Login"),

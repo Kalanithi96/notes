@@ -77,6 +77,7 @@ class _LoginViewState extends State<LoginView> {
                     );
                   }
                 } on FirebaseAuthException catch (e) {
+                  //INVALID_LOGIN_CREDENTIALS
                   await showErrorDialog(
                     context,
                     "Error: ${e.code}",

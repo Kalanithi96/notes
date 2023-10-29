@@ -46,7 +46,13 @@ class HomePage extends StatelessWidget {
                 return const VerifyEmailView();
               }
             default: 
-              return const CircularProgressIndicator();
+              return const Column(
+                children: [
+                  Center(
+                    child: CircularProgressIndicator(),
+                  )
+                ],
+              );
           }
         },
       );

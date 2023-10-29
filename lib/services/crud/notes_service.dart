@@ -5,13 +5,21 @@ import 'package:notes/services/crud/crud_exceptions.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'dart:developer' as devtools show log;
 
 class NotesService {
   Database? _db;
 
+  static final NotesService _shared = NotesService._sharedInstance();
+  NotesService._sharedInstance();
+  factory NotesService() => _shared;
+
   List<DatabaseNote> _notes = [];
 
-  final _notesStreamController = StreamController<List<DatabaseNote>>.broadcast();
+  final _notesStreamController =
+      StreamController<List<DatabaseNote>>.broadcast();
+
+  Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
 
   Database _getDatabaseOrThrow() {
     final db = _db;
@@ -22,7 +30,7 @@ class NotesService {
     }
   }
 
-  Future<void> _cacheNotes() async{
+  Future<void> _cacheNotes() async {
     final allNotes = await getAllNotes();
     _notes = allNotes.toList();
     _notesStreamController.add(_notes);
@@ -38,19 +46,25 @@ class NotesService {
       final db = await openDatabase(dbPath);
       _db = db;
 
-      await db.execute(createUserTable);
-      await db.execute(createNotesTable);
+      try {
+        await db.execute(createUserTable);
+        await db.execute(createNotesTable);
+      } on DatabaseException {
+        // Empty
+      }
 
       await _cacheNotes();
     } on MissingPlatformDirectoryException {
       throw UnableToGetDocumentsDirectory();
+    } catch (e) {
+      devtools.log(e.toString());
     }
   }
 
-  Future<void> _ensureDbIsOpen() async{
-    try{
+  Future<void> _ensureDbIsOpen() async {
+    try {
       await open();
-    }on DatabaseAlreadyOpenException{}
+    } on DatabaseAlreadyOpenException {}
   }
 
   Future<void> close() async {
@@ -113,13 +127,13 @@ class NotesService {
 
   Future<DatabaseUser> getOrCreateUser({required String email}) async {
     await _ensureDbIsOpen();
-    try{
+    try {
       final user = await getUser(email: email);
       return user;
-    }on CouldNotFindUser{
+    } on UserDoesNotExist {
       final user = await createUser(email: email);
       return user;
-    } catch(e){
+    } catch (e) {
       rethrow;
     }
   }
@@ -131,7 +145,7 @@ class NotesService {
     // Make sure owner exists in the database with correct id
     final dbUser = await getUser(email: owner.email);
     if (dbUser != owner) {
-      throw CouldNotFindUser();
+      throw UserMismatch();
     }
 
     const text = '';
@@ -168,8 +182,8 @@ class NotesService {
     );
     if (deleteCount == 0) {
       throw CouldNotDeleteNote();
-    } else{
-      _notes.removeWhere((note)=> note.id == id);
+    } else {
+      _notes.removeWhere((note) => note.id == id);
       _notesStreamController.add(_notes);
     }
   }
@@ -184,7 +198,7 @@ class NotesService {
       whereArgs: [userId],
     );
 
-    _notes.removeWhere((note)=> note.userId == userId);
+    _notes.removeWhere((note) => note.userId == userId);
     _notesStreamController.add(_notes);
 
     return deleteCount;
@@ -193,10 +207,10 @@ class NotesService {
   Future<int> deleteAllNotes() async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-    
+
     _notes = [];
     _notesStreamController.add(_notes);
-    
+
     return await db.delete(notesTable);
   }
 
@@ -213,7 +227,7 @@ class NotesService {
       throw CouldNotFindNote();
     }
     final note = DatabaseNote.fromRow(notes.first);
-    _notes.removeWhere((row)=>id==row.id);
+    _notes.removeWhere((row) => id == row.id);
     _notes.add(note);
     _notesStreamController.add(_notes);
     return note;
@@ -224,7 +238,8 @@ class NotesService {
     final db = _getDatabaseOrThrow();
     final notes = await db.query(notesTable);
 
-    final notesIterable = notes.map((notesRow) => DatabaseNote.fromRow(notesRow));
+    final notesIterable =
+        notes.map((notesRow) => DatabaseNote.fromRow(notesRow));
 
     _notes = notesIterable.toList();
     _notesStreamController.add(_notes);
@@ -253,9 +268,8 @@ class NotesService {
     if (updatesCount == 0) {
       throw CouldNotUpdateNote();
     } else {
-
       final updatedNote = await getNote(id: note.id);
-      _notes.removeWhere((row)=>updatedNote.id==row.id);
+      _notes.removeWhere((row) => updatedNote.id == row.id);
       _notes.add(updatedNote);
       _notesStreamController.add(_notes);
 

@@ -37,27 +37,36 @@ class _NotesViewState extends State<NotesView> {
       appBar: AppBar(
         title: const Text("Notes"),
         actions: [
-          PopupMenuButton<MenuAction>(onSelected: (value) async {
-            devtools.log(value.toString());
-            switch (value) {
-              case MenuAction.logout:
-                final shouldLogOut = await showLogOutDialogue(context);
-                devtools.log(shouldLogOut.toString());
-                if (shouldLogOut) {
-                  await AuthService.firebase().logOut();
-                  // ignore: use_build_context_synchronously
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    loginRoute,
-                    (route) => false,
-                  );
-                }
-            }
-          }, itemBuilder: (context) {
-            return [
-              const PopupMenuItem<MenuAction>(
-                  value: MenuAction.logout, child: Text("Log Out"))
-            ];
-          })
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(newNoteRoute);
+            },
+            icon: const Icon(Icons.add),
+          ),
+          PopupMenuButton<MenuAction>(
+            onSelected: (value) async {
+              devtools.log(value.toString());
+              switch (value) {
+                case MenuAction.logout:
+                  final shouldLogOut = await showLogOutDialogue(context);
+                  devtools.log(shouldLogOut.toString());
+                  if (shouldLogOut) {
+                    await AuthService.firebase().logOut();
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      loginRoute,
+                      (route) => false,
+                    );
+                  }
+              }
+            },
+            itemBuilder: (context) {
+              return [
+                const PopupMenuItem<MenuAction>(
+                    value: MenuAction.logout, child: Text("Log Out"))
+              ];
+            },
+          ),
         ],
       ),
       body: FutureBuilder(

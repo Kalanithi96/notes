@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
+//import 'dart:developer' as devtools show log;
 
 import 'package:notes/constants/routes.dart';
 import 'package:notes/services/auth/auth_exceptions.dart';
@@ -65,7 +65,7 @@ class _LoginViewState extends State<LoginView> {
                     email: email,
                     password: password,
                   );
-                  devtools.log(user.toString());
+                  //devtools.log(user.toString());
                   if (user.isEmailVerified) {
                     Navigator.of(context).pushNamedAndRemoveUntil(
                       notesRoute,

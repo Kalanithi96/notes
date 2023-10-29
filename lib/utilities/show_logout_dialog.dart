@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
+//import 'dart:developer' as devtools show log;
 
 Future<bool> showLogOutDialogue(BuildContext context) {
   return showDialog<bool>(
@@ -11,13 +11,13 @@ Future<bool> showLogOutDialogue(BuildContext context) {
           actions: [
             TextButton(
                 onPressed: () {
-                  devtools.log("Canceling");
+                  //devtools.log("Canceling");
                   Navigator.of(context).pop(false);
                 },
                 child: const Text("Cancel")),
             TextButton(
                 onPressed: () {
-                  devtools.log("Logging out");
+                  //devtools.log("Logging out");
                   Navigator.of(context).pop(true);
                 },
                 child: const Text("Log out")),

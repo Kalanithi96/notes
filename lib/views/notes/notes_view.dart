@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
+//import 'dart:developer' as devtools show log;
 
 import 'package:notes/constants/routes.dart';
 import 'package:notes/enums/menu_action.dart';
@@ -22,10 +22,17 @@ class _NotesViewState extends State<NotesView> {
   @override
   void initState() {
     _notesService = NotesService();
-    try{
+    try {
       _notesService.open();
-    }on DatabaseAlreadyOpenException {}
+    } on DatabaseAlreadyOpenException {}
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _notesService.close();
+    super.dispose();
   }
 
   @override
@@ -42,11 +49,11 @@ class _NotesViewState extends State<NotesView> {
           ),
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
-              devtools.log(value.toString());
+              //devtools.log(value.toString());
               switch (value) {
                 case MenuAction.logout:
                   final shouldLogOut = await showLogOutDialogue(context);
-                  devtools.log(shouldLogOut.toString());
+                  //devtools.log(shouldLogOut.toString());
                   if (shouldLogOut) {
                     await AuthService.firebase().logOut();
                     // ignore: use_build_context_synchronously
@@ -79,7 +86,26 @@ class _NotesViewState extends State<NotesView> {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                     case ConnectionState.active:
-                      return const Text("Waiting for all notes");
+                      if (snapshot.hasData) {
+                        final allNotes = snapshot.data as List<DatabaseNote>;
+                        return ListView.builder(
+                          itemCount: allNotes.length,
+                          itemBuilder: (context, index) {
+                            final note = allNotes[index];
+                            final display = (note.title == '')? note.text : note.title;
+                            return ListTile(
+                              title: Text(
+                                display,
+                                maxLines: 2,
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          },
+                        );
+                      } else {
+                        return const CircularProgressIndicator();
+                      }
                     default:
                       return const CircularProgressIndicator();
                   }

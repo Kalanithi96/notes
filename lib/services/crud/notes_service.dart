@@ -70,7 +70,7 @@ class NotesService {
   Future<void> _ensureDbIsOpen() async {
     try {
       await open();
-    } on DatabaseAlreadyOpenException {}
+    } on DatabaseAlreadyOpenException catch(_){}
   }
 
   Future<void> close() async {
@@ -260,12 +260,13 @@ class NotesService {
   }) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-    await getNote(id: note.id);
+    final noteInDb = await getNote(id: note.id);
+
     final updatesCount = await db.update(
       notesTable,
       {
-        textColumn: text ?? note.text,
-        titleColumn: title ?? note.title,
+        textColumn: text ?? noteInDb.text,
+        titleColumn: title ?? noteInDb.title,
         isSyncedWithCloudColumn: 0,
       },
       where: 'id = ?',

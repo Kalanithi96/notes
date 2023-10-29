@@ -4,6 +4,7 @@ import 'dart:developer' as devtools show log;
 import 'package:notes/constants/routes.dart';
 import 'package:notes/enums/menu_action.dart';
 import 'package:notes/services/auth/auth_service.dart';
+import 'package:notes/services/crud/crud_exceptions.dart';
 import 'package:notes/services/crud/notes_service.dart';
 import 'package:notes/utilities/show_logout_dialog.dart';
 
@@ -21,14 +22,10 @@ class _NotesViewState extends State<NotesView> {
   @override
   void initState() {
     _notesService = NotesService();
-    _notesService.open();
+    try{
+      _notesService.open();
+    }on DatabaseAlreadyOpenException {}
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _notesService.close();
-    super.dispose();
   }
 
   @override

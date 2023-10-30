@@ -25,10 +25,9 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
   }
 
   Future<DatabaseNote> createOrGetExistingNote(BuildContext context) async {
-    
     final widgetNote = context.getArgument<DatabaseNote>();
 
-    if(widgetNote != null){
+    if (widgetNote != null) {
       _note = widgetNote;
       _textController.text = widgetNote.text;
       _titleController.text = widgetNote.title;
@@ -70,7 +69,8 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
 
   void _saveNoteIfNotEmpty() async {
     final note = _note;
-    if (_textController.text.isEmpty && note != null) {
+    if ((_titleController.text.isNotEmpty || _textController.text.isNotEmpty) &&
+        note != null) {
       await _notesService.updateNote(
         note: note,
         text: _textController.text,
@@ -132,24 +132,28 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
                     controller: _titleController,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
-                    decoration: const InputDecoration(
-                      hintText: "Enter the title here"
-                    ),
+                    decoration:
+                        const InputDecoration(hintText: "Enter the title here"),
                   ),
                   TextField(
                     controller: _textController,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     decoration: const InputDecoration(
-                      hintText: "Enter the content here"
-                    ),
-                  )
+                        hintText: "Enter the content here"),
+                  ),
                 ],
               );
             default:
               return const CircularProgressIndicator();
           }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        child: const Icon(Icons.check),
       ),
     );
   }

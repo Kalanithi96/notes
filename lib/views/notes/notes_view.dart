@@ -6,7 +6,8 @@ import 'package:notes/enums/menu_action.dart';
 import 'package:notes/services/auth/auth_service.dart';
 import 'package:notes/services/crud/crud_exceptions.dart';
 import 'package:notes/services/crud/notes_service.dart';
-import 'package:notes/utilities/show_logout_dialog.dart';
+import 'package:notes/utilities/dialogs/show_logout_dialog.dart';
+import 'package:notes/views/notes/notes_list_view.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -88,20 +89,9 @@ class _NotesViewState extends State<NotesView> {
                     case ConnectionState.active:
                       if (snapshot.hasData) {
                         final allNotes = snapshot.data as List<DatabaseNote>;
-                        return ListView.builder(
-                          itemCount: allNotes.length,
-                          itemBuilder: (context, index) {
-                            final note = allNotes[index];
-                            final display = (note.title == '')? note.text : note.title;
-                            return ListTile(
-                              title: Text(
-                                display,
-                                maxLines: 2,
-                                softWrap: true,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            );
-                          },
+                        return NotesListView(
+                          allNotes: allNotes,
+                          onDeleteNote: (DatabaseNote note) {},
                         );
                       } else {
                         return const CircularProgressIndicator();

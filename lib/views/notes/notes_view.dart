@@ -88,19 +88,18 @@ class _NotesViewState extends State<NotesView> {
                     case ConnectionState.waiting:
                     case ConnectionState.active:
                       if (snapshot.hasData) {
-                        final allNotes = snapshot.data as List<DatabaseNote>;
-                        return NotesListView(
-                          allNotes: allNotes,
-                          onDeleteNote: (note) async {
-                            await _notesService.deleteNote(id: note.id);
-                          },
-                          onTap: (note) async {
-                            Navigator.of(context).pushNamed(
-                              createOrUpdateNoteRoute,
-                              arguments: note
-                            );
-                          },
-                        );
+                          final allNotes = snapshot.data as List<DatabaseNote>;
+                          return NotesListView(
+                            allNotes: allNotes,
+                            onDeleteNote: (note) async {
+                              await _notesService.deleteNote(id: note.id);
+                            },
+                            onTap: (note) async {
+                              Navigator.of(context).pushNamed(
+                                  createOrUpdateNoteRoute,
+                                  arguments: note);
+                            },
+                          );
                       } else {
                         return const CircularProgressIndicator();
                       }

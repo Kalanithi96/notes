@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:notes/extensions/filter.dart';
 import 'package:notes/services/crud/crud_exceptions.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
@@ -9,15 +10,15 @@ import 'dart:developer' as devtools show log;
 
 class NotesService {
   Database? _db;
+  DatabaseUser? _user;
 
   static final NotesService _shared = NotesService._sharedInstance();
-  NotesService._sharedInstance(){
-   _notesStreamController =
-      StreamController<List<DatabaseNote>>.broadcast(
-        onListen: () {
-          _notesStreamController.sink.add(_notes);
-        },
-      );
+  NotesService._sharedInstance() {
+    _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
+      onListen: () {
+        _notesStreamController.sink.add(_notes);
+      },
+    );
   }
   factory NotesService() => _shared;
 
@@ -25,7 +26,15 @@ class NotesService {
 
   late final StreamController<List<DatabaseNote>> _notesStreamController;
 
-  Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
+  Stream<List<DatabaseNote>> get allNotes =>
+      _notesStreamController.stream.filter((note) {
+        final currentUser = _user;
+        if (currentUser != null) {
+          return note.userId == currentUser.id;
+        } else {
+          throw UserMustBeSetBeforeReadingAllNotes();
+        }
+      });
 
   Database _getDatabaseOrThrow() {
     final db = _db;
@@ -70,7 +79,7 @@ class NotesService {
   Future<void> _ensureDbIsOpen() async {
     try {
       await open();
-    } on DatabaseAlreadyOpenException catch(_){}
+    } on DatabaseAlreadyOpenException catch (_) {}
   }
 
   Future<void> close() async {
@@ -131,13 +140,22 @@ class NotesService {
     return DatabaseUser.fromRow(results.first);
   }
 
-  Future<DatabaseUser> getOrCreateUser({required String email}) async {
+  Future<DatabaseUser> getOrCreateUser({
+    required String email,
+    bool setAsCurrentUser = true,
+  }) async {
     await _ensureDbIsOpen();
     try {
       final user = await getUser(email: email);
+      if (setAsCurrentUser) {
+        _user = user;
+      }
       return user;
     } on UserDoesNotExist {
       final user = await createUser(email: email);
+      if (setAsCurrentUser) {
+        _user = user;
+      }
       return user;
     } catch (e) {
       rethrow;

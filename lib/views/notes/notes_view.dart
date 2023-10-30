@@ -91,7 +91,9 @@ class _NotesViewState extends State<NotesView> {
                         final allNotes = snapshot.data as List<DatabaseNote>;
                         return NotesListView(
                           allNotes: allNotes,
-                          onDeleteNote: (DatabaseNote note) {},
+                          onDeleteNote: (note) async {
+                            await _notesService.deleteNote(id: note.id);
+                          },
                         );
                       } else {
                         return const CircularProgressIndicator();

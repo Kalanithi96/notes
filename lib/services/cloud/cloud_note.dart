@@ -15,6 +15,11 @@ class CloudNote {
     required this.text,
   });
 
+  @override
+  String toString(){
+    return "Title: $title\nText: $text";
+  }
+
   CloudNote.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
       : documentId = snapshot.id,
         ownerId = snapshot.data()[ownerIdFieldName],

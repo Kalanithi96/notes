@@ -3,6 +3,8 @@ import 'package:notes/services/auth/auth_service.dart';
 import 'package:notes/extensions/get_arguments.dart';
 import 'package:notes/services/cloud/cloud_note.dart';
 import 'package:notes/services/cloud/firebase_cloud_storage.dart';
+import 'package:notes/utilities/dialogs/cannot_share_empty_note_dialog.dart';
+import 'package:share_plus/share_plus.dart';
 
 class CreateUpdateNoteView extends StatefulWidget {
   const CreateUpdateNoteView({super.key});
@@ -72,7 +74,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
     if ((_titleController.text.isNotEmpty || _textController.text.isNotEmpty) &&
         note != null) {
       await _notesService.updateNote(
-         documentId: note.documentId,
+        documentId: note.documentId,
         newText: _textController.text,
         newTitle: _titleController.text,
       );
@@ -86,7 +88,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
     } else {
       final text = _textController.text;
       await _notesService.updateNote(
-         documentId: note.documentId,
+        documentId: note.documentId,
         newText: text,
       );
     }
@@ -99,7 +101,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
     } else {
       final title = _titleController.text;
       await _notesService.updateNote(
-         documentId: note.documentId,
+        documentId: note.documentId,
         newTitle: title,
       );
     }
@@ -117,6 +119,32 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("New Note"),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              final text = _textController.text;
+              final title = _titleController.text;
+              if (text.isEmpty && title.isEmpty) {
+                await cannotShareEmptyNoteDialog(context);
+              } else if(text.isEmpty){
+                Share.share(title);
+              } else if(title.isEmpty){
+                Share.share(text);
+              }
+              else {
+                Share.share(
+                  CloudNote(
+                    documentId: "documentId",
+                    ownerId: "ownerId",
+                    title: title,
+                    text: text,
+                  ).toString(),
+                );
+              }
+            },
+            icon: const Icon(Icons.share),
+          )
+        ],
       ),
       body: FutureBuilder(
         future: createOrGetExistingNote(context),

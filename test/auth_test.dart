@@ -138,7 +138,7 @@ class MockAuthProvider implements AuthProvider {
     if (password == "green") throw InvalidCredentialsException();
     if (email == "") throw EmptyChannelException();
     if (password == "") throw EmptyChannelException();
-    _user = const AuthUser(email:"user@email.com",isEmailVerified: false);
+    _user = const AuthUser(id:"my_id",email:"user@email.com",isEmailVerified: false);
     await Future.delayed(const Duration(seconds: 2));
     return Future.value(_user);
   }
@@ -162,7 +162,7 @@ class MockAuthProvider implements AuthProvider {
     if (password == "123") throw WeakPasswordException();
     if (email == "") throw EmptyChannelException();
     if (password == "") throw EmptyChannelException();
-    _user = const AuthUser(email:"user@email.com",isEmailVerified: false);
+    _user = const AuthUser(id:"my_id",email:"user@email.com",isEmailVerified: false);
     await Future.delayed(const Duration(seconds: 2));
     return Future.value(_user);
   }
@@ -172,6 +172,6 @@ class MockAuthProvider implements AuthProvider {
     if (!isInitialized) throw NotInitializedException();
     if (_user == null) throw UserNotLoggedInAuthException();
     await Future.delayed(const Duration(seconds: 2));
-    _user = const AuthUser(email:"user@email.com", isEmailVerified: true);
+    _user = const AuthUser(id:"my_id",email:"user@email.com", isEmailVerified: true);
   }
 }

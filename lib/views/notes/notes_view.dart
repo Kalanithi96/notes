@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:notes/constants/routes.dart';
 import 'package:notes/enums/menu_action.dart';
 import 'package:notes/services/auth/auth_service.dart';
-import 'package:notes/services/cloud/cloud_note.dart';
-import 'package:notes/services/cloud/firebase_cloud_storage.dart';
+import 'package:notes/services/crud/cloud/cloud_note.dart';
+import 'package:notes/services/crud/cloud/firebase_cloud_storage.dart';
 import 'package:notes/utilities/dialogs/show_logout_dialog.dart';
 import 'package:notes/views/notes/notes_list_view.dart';
 

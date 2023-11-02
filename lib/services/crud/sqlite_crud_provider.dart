@@ -2,25 +2,27 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:notes/extensions/filter.dart';
-import 'package:notes/services/crud/crud_exceptions.dart';
+import 'package:notes/services/crud/crud_provider.dart';
+import 'package:notes/services/crud/local/sqlite_storage_exceptions.dart';
+import 'package:notes/services/crud/note.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:developer' as devtools show log;
 
-class NotesService {
+class SqliteCrudProvider implements CrudProvider{
   Database? _db;
   DatabaseUser? _user;
 
-  static final NotesService _shared = NotesService._sharedInstance();
-  NotesService._sharedInstance() {
+  static final SqliteCrudProvider _shared = SqliteCrudProvider._sharedInstance();
+  SqliteCrudProvider._sharedInstance() {
     _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
       onListen: () {
         _notesStreamController.sink.add(_notes);
       },
     );
   }
-  factory NotesService() => _shared;
+  factory SqliteCrudProvider() => _shared;
 
   List<DatabaseNote> _notes = [];
 
@@ -328,39 +330,22 @@ class DatabaseUser {
   int get hashCode => id.hashCode;
 }
 
-class DatabaseNote {
-  final int id;
-  final int userId;
-  final String title;
-  final String text;
+class DatabaseNote extends Note{
   final bool isSyncedWithCloud;
 
-  DatabaseNote({
-    required this.id,
-    required this.userId,
-    required this.text,
-    required this.title,
+  const DatabaseNote({
+    required super.documentId,
+    required super.ownerId,
+    required super.text,
+    required super.title,
     required this.isSyncedWithCloud,
   });
 
-  DatabaseNote.fromRow(Map<String, Object?> map)
-      : id = map[idColumn] as int,
-        userId = map[userIdColumn] as int,
-        title = map[titleColumn] as String,
-        text = map[textColumn] as String,
+  @override
+  DatabaseNote.fromRow(Map<String, Object?> map):
         isSyncedWithCloud =
-            (map[isSyncedWithCloudColumn] as int) == 1 ? true : false;
-
-  @override
-  String toString() {
-    return "ID = $id, User ID = $userId, Title = $title, isSyncedWithCloud = $isSyncedWithCloud, Text = $text\n";
-  }
-
-  @override
-  bool operator ==(covariant DatabaseNote other) => id == other.id;
-
-  @override
-  int get hashCode => id.hashCode;
+            (map[isSyncedWithCloudColumn] as int) == 1 ? true : false,
+        super.fromRow(map);
 }
 
 const dbName = 'notes.db';

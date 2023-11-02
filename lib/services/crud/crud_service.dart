@@ -1,5 +1,6 @@
 import 'package:notes/services/crud/crud_provider.dart';
 import 'package:notes/services/crud/note.dart';
+import 'package:notes/services/crud/sqlite_crud_provider.dart';
 
 class CrudService implements CrudProvider {
   final CrudProvider crudProvider;
@@ -16,7 +17,7 @@ class CrudService implements CrudProvider {
   }
 
   @override
-  Stream<Iterable<Note>> getAllNotes({required owner}) {
+  Future<Stream<Iterable<Note>>> getAllNotes({required owner}) {
     return crudProvider.getAllNotes(owner: owner);
   }
 
@@ -37,4 +38,6 @@ class CrudService implements CrudProvider {
       text: text,
     );
   }
+
+  factory CrudService.sqlite() => CrudService(crudProvider: SqliteCrudProvider());
 }

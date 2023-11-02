@@ -1,4 +1,4 @@
-import 'dart:async';
+/* import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:notes/extensions/filter.dart';
@@ -386,3 +386,4 @@ const createNotesTable = '''CREATE TABLE "notes" (
                                   FOREIGN KEY("user_id") REFERENCES "user"("id") ON UPDATE CASCADE ON DELETE CASCADE,
                                   PRIMARY KEY("id")
                                 );''';
+ */

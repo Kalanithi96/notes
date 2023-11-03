@@ -4,13 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:notes/constants/routes.dart';
 import 'package:notes/enums/menu_action.dart';
 import 'package:notes/services/auth/auth_service.dart';
-import 'package:notes/services/crud/cloud/cloud_note.dart';
-import 'package:notes/services/crud/cloud/firebase_cloud_storage.dart';
 import 'package:notes/services/crud/crud_service.dart';
-import 'package:notes/services/crud/sqlite_crud_provider.dart';
+import 'package:notes/services/crud/note.dart';
 import 'package:notes/utilities/dialogs/show_logout_dialog.dart';
 import 'package:notes/views/notes/notes_list_view.dart';
-import 'package:sqflite/sqflite.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -20,13 +17,12 @@ class NotesView extends StatefulWidget {
 }
 
 class _NotesViewState extends State<NotesView> {
-  late final SqliteCrudProvider _notesService;
-  //String get userId => AuthService.firebase().currentUser!.id;
+  late final CrudService _notesService;
   String get email => AuthService.firebase().currentUser!.email;
 
   @override
   void initState() {
-    _notesService = SqliteCrudProvider();
+    _notesService = CrudService.sqlite();
     super.initState();
   }
 
@@ -88,7 +84,7 @@ class _NotesViewState extends State<NotesView> {
                             case ConnectionState.active:
                               if (snapshot.hasData) {
                                 final allNotes =
-                                    snapshot.data as Iterable<DatabaseNote>;
+                                    snapshot.data as Iterable<Note>;
                                 return NotesListView(
                                   allNotes: allNotes,
                                   onDeleteNote: (note) async {

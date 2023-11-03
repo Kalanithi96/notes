@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:notes/services/auth/auth_service.dart';
 import 'package:notes/extensions/get_arguments.dart';
-import 'package:notes/services/crud/cloud/cloud_note.dart';
-import 'package:notes/services/crud/cloud/firebase_cloud_storage.dart';
-import 'package:notes/services/crud/local/sqlite_local_storage.dart';
-import 'package:notes/services/crud/sqlite_crud_provider.dart'
-    show SqliteCrudProvider, DatabaseNote;
+import 'package:notes/services/crud/crud_service.dart';
+import 'package:notes/services/crud/note.dart';
 import 'package:notes/utilities/dialogs/cannot_share_empty_note_dialog.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -17,21 +14,21 @@ class CreateUpdateNoteView extends StatefulWidget {
 }
 
 class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
-  DatabaseNote? _note;
-  late final SqliteCrudProvider _notesService;
+  Note? _note;
+  late final CrudService _notesService;
   late final TextEditingController _textController;
   late final TextEditingController _titleController;
 
   @override
   void initState() {
-    _notesService = SqliteCrudProvider();
+    _notesService = CrudService.sqlite();
     _textController = TextEditingController();
     _titleController = TextEditingController();
     super.initState();
   }
 
-  Future<DatabaseNote> createOrGetExistingNote(BuildContext context) async {
-    final widgetNote = context.getArgument<DatabaseNote>();
+  Future<Note> createOrGetExistingNote(BuildContext context) async {
+    final widgetNote = context.getArgument<Note>();
 
     if (widgetNote != null) {
       _note = widgetNote;
@@ -47,7 +44,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
       final currentUser = AuthService.firebase().currentUser!;
       final userId = currentUser.id;
       final newNote =
-          await _notesService.createNote(owner: _notesService.user!);
+          await _notesService.createNote(owner: userId);
       _note = newNote;
       return newNote;
     }
@@ -68,7 +65,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
         _titleController.text.isEmpty &&
         note != null) {
       await _notesService.deleteNote(
-        id: note.documentId as int,
+        id: note.documentId,
       );
     }
   }
@@ -136,7 +133,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
                 Share.share(text);
               } else {
                 Share.share(
-                  CloudNote(
+                  Note(
                     documentId: "documentId",
                     ownerId: "ownerId",
                     title: title,

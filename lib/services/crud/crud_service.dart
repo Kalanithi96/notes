@@ -1,10 +1,14 @@
 import 'package:notes/services/crud/crud_provider.dart';
+import 'package:notes/services/crud/firebase_crud_provider.dart';
 import 'package:notes/services/crud/note.dart';
 import 'package:notes/services/crud/sqlite_crud_provider.dart';
 
 class CrudService implements CrudProvider {
   final CrudProvider crudProvider;
   CrudService({required this.crudProvider});
+
+  @override
+  dynamic get user => crudProvider.user;
 
   @override
   Future<Note> createNote({owner}) async {
@@ -40,4 +44,20 @@ class CrudService implements CrudProvider {
   }
 
   factory CrudService.sqlite() => CrudService(crudProvider: SqliteCrudProvider());
+  factory CrudService.firebase() => CrudService(crudProvider: FirebaseCrudProvider());
+  
+  @override
+  Future createUser({required String email}) async {
+    return await crudProvider.createUser(email: email);
+  }
+  
+  @override
+  Future getOrCreateUser({required String email, bool setAsCurrentUser = true}) async {
+    return await crudProvider.getOrCreateUser(email: email);
+  }
+  
+  @override
+  Future getUser({required String email}) async {
+    return await crudProvider.getUser(email: email);
+  }
 }

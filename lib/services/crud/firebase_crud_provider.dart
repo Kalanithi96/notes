@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:notes/services/auth/auth_service.dart';
-import 'package:notes/services/crud/cloud/cloud_storage_constants.dart';
-import 'package:notes/services/crud/cloud/cloud_storage_exceptions.dart';
+import 'package:notes/constants/cloud_storage_constants.dart';
+import 'package:notes/services/crud/cloud_storage_exceptions.dart';
 import 'package:notes/services/crud/crud_provider.dart';
 import 'package:notes/services/crud/note.dart';
 

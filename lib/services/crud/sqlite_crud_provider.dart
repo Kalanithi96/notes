@@ -29,6 +29,7 @@ class SqliteCrudProvider implements CrudProvider{
 
   late final StreamController<Iterable<DatabaseNote>> _notesStreamController;
 
+  @override
   DatabaseUser? get user => _user;
 
   Stream<Iterable<DatabaseNote>> get allNotes =>
@@ -107,6 +108,7 @@ class SqliteCrudProvider implements CrudProvider{
     }
   }
 
+  @override
   Future<DatabaseUser> createUser({required String email}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
@@ -131,6 +133,7 @@ class SqliteCrudProvider implements CrudProvider{
     );
   }
 
+  @override
   Future<DatabaseUser> getUser({required String email}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
@@ -146,6 +149,7 @@ class SqliteCrudProvider implements CrudProvider{
     return DatabaseUser.fromRow(results.first);
   }
 
+  @override
   Future<DatabaseUser> getOrCreateUser({
     required String email,
     bool setAsCurrentUser = true,

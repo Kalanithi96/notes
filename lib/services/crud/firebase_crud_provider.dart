@@ -9,7 +9,8 @@ import 'package:notes/services/crud/note.dart';
 class FirebaseCrudProvider implements CrudProvider{
   final notes = FirebaseFirestore.instance.collection('notes');
 
-  dynamic get user => AuthService.firebase().currentUser?.id;
+  @override
+  String? get user => AuthService.firebase().currentUser?.id;
 
   FirebaseCrudProvider._sharedInstance();
   static final FirebaseCrudProvider _shared =

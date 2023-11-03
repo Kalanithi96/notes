@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:notes/constants/routes.dart';
 import 'package:notes/enums/menu_action.dart';
 import 'package:notes/services/auth/auth_service.dart';
-import 'package:notes/services/cloud/cloud_note.dart';
-import 'package:notes/services/cloud/firebase_cloud_storage.dart';
+import 'package:notes/services/crud/crud_service.dart';
+import 'package:notes/services/crud/note.dart';
 import 'package:notes/utilities/dialogs/show_logout_dialog.dart';
 import 'package:notes/views/notes/notes_list_view.dart';
 
@@ -17,12 +17,12 @@ class NotesView extends StatefulWidget {
 }
 
 class _NotesViewState extends State<NotesView> {
-  late final FirebaseCloudStorage _notesService;
-  String get userId => AuthService.firebase().currentUser!.id;
+  late final CrudService _notesService;
+  String get email => AuthService.firebase().currentUser!.email;
 
   @override
   void initState() {
-    _notesService = FirebaseCloudStorage();
+    _notesService = CrudService.sqlite();
     super.initState();
   }
 
@@ -66,27 +66,50 @@ class _NotesViewState extends State<NotesView> {
           ),
         ],
       ),
-      body: StreamBuilder(
-        stream: _notesService.allNotes(ownerId: userId),
+      body: FutureBuilder(
+        future: _notesService.getOrCreateUser(email: email),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-            case ConnectionState.active:
-              if (snapshot.hasData) {
-                final allNotes = snapshot.data as Iterable<CloudNote>;
-                return NotesListView(
-                  allNotes: allNotes,
-                  onDeleteNote: (note) async {
-                    await _notesService.deleteNote(documentId: note.documentId);
-                  },
-                  onTap: (note) async {
-                    Navigator.of(context)
-                        .pushNamed(createOrUpdateNoteRoute, arguments: note);
-                  },
-                );
-              } else {
-                return const CircularProgressIndicator();
-              }
+            case ConnectionState.done:
+              return FutureBuilder(
+                future: _notesService.getAllNotes(owner: _notesService.user!),
+                builder: ((context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.done:
+                      return StreamBuilder(
+                        stream: snapshot.data,
+                        builder: (context, snapshot) {
+                          switch (snapshot.connectionState) {
+                            case ConnectionState.waiting:
+                            case ConnectionState.active:
+                              if (snapshot.hasData) {
+                                final allNotes =
+                                    snapshot.data as Iterable<Note>;
+                                return NotesListView(
+                                  allNotes: allNotes,
+                                  onDeleteNote: (note) async {
+                                    await _notesService.deleteNote(
+                                        id: note.documentId);
+                                  },
+                                  onTap: (note) async {
+                                    Navigator.of(context).pushNamed(
+                                        createOrUpdateNoteRoute,
+                                        arguments: note);
+                                  },
+                                );
+                              } else {
+                                return const CircularProgressIndicator();
+                              }
+                            default:
+                              return const CircularProgressIndicator();
+                          }
+                        },
+                      );
+                    default:
+                      return const CircularProgressIndicator();
+                  }
+                }),
+              );
             default:
               return const CircularProgressIndicator();
           }

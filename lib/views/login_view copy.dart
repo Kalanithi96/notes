@@ -61,7 +61,7 @@ class _LoginViewState extends State<LoginView> {
                 final email = _email.text;
                 final password = _password.text;
                 try {
-                  context.read<AuthBloc>().add(AuthEventLogIn(
+                  context.read<AuthBloc>().add(AuthEventRegister(
                         email: email,
                         password: password,
                       ));

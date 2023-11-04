@@ -44,7 +44,7 @@ class Note {
 
   Note.fromRow(Map<String, Object?> map)
       : documentId = map[idColumn] as int,
-        ownerId = map[userIdColumn] as int,
+        ownerId = map[userIdColumn] as String,
         title = map[titleColumn] as String,
         text = map[textColumn] as String;
 }

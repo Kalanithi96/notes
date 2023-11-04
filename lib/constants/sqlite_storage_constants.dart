@@ -8,13 +8,13 @@ const titleColumn = 'title';
 const textColumn = 'text';
 const isSyncedWithCloudColumn = 'is_synced_with_cloud';
 const createUserTable = '''CREATE TABLE "user" (
-                                  "id"	INTEGER NOT NULL,
+                                  "id"	TEXT NOT NULL,
                                   "email"	TEXT NOT NULL UNIQUE,
-                                  PRIMARY KEY("id" AUTOINCREMENT)
+                                  PRIMARY KEY("id")
                                 );''';
 const createNotesTable = '''CREATE TABLE "notes" (
                                   "id"	INTEGER NOT NULL UNIQUE,
-                                  "user_id"	INTEGER NOT NULL,
+                                  "user_id"	TEXT NOT NULL,
                                   "text"	TEXT,
                                   "title"	TEXT NOT NULL,
                                   "is_synced_with_cloud"	INTEGER NOT NULL DEFAULT 0,

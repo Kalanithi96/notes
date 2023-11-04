@@ -6,7 +6,7 @@ import 'package:notes/services/crud/cloud_storage_exceptions.dart';
 import 'package:notes/services/crud/crud_provider.dart';
 import 'package:notes/services/crud/note.dart';
 
-class FirebaseCrudProvider implements CrudProvider {
+class FirebaseCrudProvider implements CrudProvider{
   final notes = FirebaseFirestore.instance.collection('notes');
 
   @override
@@ -35,15 +35,31 @@ class FirebaseCrudProvider implements CrudProvider {
     );
   }
 
-  @override
-  Future<Stream<Iterable<CloudNote>>> getAllNotes(
-      {required covariant String owner}) async {
-    return notes
-        .where(ownerIdFieldName, isEqualTo: owner)
-        .snapshots()
-        .map((event) => event.docs.map((doc) => CloudNote.fromSnapshot(doc)));
+  Future<Iterable<CloudNote>> getNotes({
+    required String ownerId,
+  }) async {
+    try {
+      return await notes
+          .where(
+            ownerIdFieldName,
+            isEqualTo: ownerId,
+          )
+          .get()
+          .then(
+              (value) => value.docs.map((doc) => CloudNote.fromSnapshot(doc)));
+    } catch (_) {
+      throw CouldNotGetAllNotesException();
+    }
   }
 
+  @override
+  Future<Stream<Iterable<CloudNote>>> getAllNotes({required covariant String owner}) async {
+      return notes.snapshots().map((event) => event.docs
+          .map(
+            (doc) => CloudNote.fromSnapshot(doc),
+          )
+          .where((note) => note.ownerId == owner));
+  }
   @override
   Future<CloudNote> updateNote({
     required covariant Note note,
@@ -79,35 +95,34 @@ class FirebaseCrudProvider implements CrudProvider {
       throw CouldNotDeleteNoteException();
     }
   }
-
+  
   @override
-  Future<CloudNote> getNote({
-    required id,
-  }) async {
+  Future<CloudNote> getNote({required id,}) async {
     try {
-      final value = await notes.doc(id).get();
+      final value = await notes.doc(id)
+          .get();
       return CloudNote.fromDocumentSnapshot(value);
     } catch (_) {
       throw CouldNotGetAllNotesException();
     }
   }
-
+  
   @override
   Future createUser({required String email}) {
     return Future.delayed(const Duration(microseconds: 1));
   }
-
+  
   @override
-  Future getOrCreateUser(
-      {required String email, bool setAsCurrentUser = true}) {
+  Future getOrCreateUser({required String email, bool setAsCurrentUser = true}) {
     return Future.delayed(const Duration(microseconds: 1));
   }
-
+  
   @override
   Future getUser({required String email}) {
     return Future.delayed(const Duration(microseconds: 1));
   }
 }
+
 
 @immutable
 class CloudNote extends Note {
@@ -120,8 +135,7 @@ class CloudNote extends Note {
 
   CloudNote.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
       : super.fromSnapshot(snapshot);
-
-  CloudNote.fromDocumentSnapshot(
-      DocumentSnapshot<Map<String, dynamic>> snapshot)
+  
+  CloudNote.fromDocumentSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot)
       : super.fromDocumentSnapshot(snapshot);
 }

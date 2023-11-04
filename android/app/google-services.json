@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "532372823119",
+    "project_id": "notes-jpk",
+    "storage_bucket": "notes-jpk.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:532372823119:android:e9cf5ed9a8ff22919b5e3a",
+        "android_client_info": {
+          "package_name": "jp.kalanithi.notes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDxlJfkUsY4i4qYUz8QbldB6AfYtKNHb4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

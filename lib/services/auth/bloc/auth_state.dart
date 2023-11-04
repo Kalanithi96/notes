@@ -4,41 +4,46 @@ import 'package:notes/services/auth/auth_user.dart';
 
 @immutable
 abstract class AuthState {
-  const AuthState();
+  final bool isLoading;
+  final String loadingText;
+  const AuthState({
+    required this.isLoading,
+    this.loadingText = "Please wait a moment",
+  });
 }
 
 class AuthUninitializedState extends AuthState {
-  const AuthUninitializedState();
+  const AuthUninitializedState({required super.isLoading});
 }
 
 class AuthLoggedInState extends AuthState {
   final AuthUser user;
-  const AuthLoggedInState({required this.user});
+  const AuthLoggedInState({required this.user, required super.isLoading});
 }
 
-class AuthLoggedOutState extends AuthState with EquatableMixin{
+class AuthLoggedOutState extends AuthState with EquatableMixin {
   final Exception? exception;
-  final bool isLoading;
   const AuthLoggedOutState({
-    required this.isLoading,
+    required super.isLoading,
     required this.exception,
+    super.loadingText
   });
-  
+
   @override
-  List<Object?> get props => [exception,isLoading];
+  List<Object?> get props => [exception, isLoading];
 }
 
 class AuthNotRegisteredState extends AuthState {
   final Exception? exception;
-  final bool isLoading;
   const AuthNotRegisteredState({
-    required this.isLoading,
+    required super.isLoading,
     required this.exception,
+    super.loadingText
   });
-  
-  List<Object?> get props => [exception,isLoading];
+
+  List<Object?> get props => [exception, isLoading];
 }
 
 class AuthEmailNotVerifiedState extends AuthState {
-  const AuthEmailNotVerifiedState();
+  const AuthEmailNotVerifiedState({required super.isLoading});
 }

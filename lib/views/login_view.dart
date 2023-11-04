@@ -6,7 +6,7 @@ import 'package:notes/services/auth/auth_exceptions.dart';
 import 'package:notes/services/auth/bloc/auth_bloc.dart';
 import 'package:notes/services/auth/bloc/auth_event.dart';
 import 'package:notes/services/auth/bloc/auth_state.dart';
-import 'package:notes/utilities/dialogs/loading_dialog.dart';
+//import 'package:notes/utilities/dialogs/loading_dialog.dart';
 import 'package:notes/utilities/dialogs/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -19,7 +19,7 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
-  CloseDialog? _closeDialogHandle;
+  //CloseDialog? _closeDialogHandle;
 
   @override
   void initState() {
@@ -40,7 +40,7 @@ class _LoginViewState extends State<LoginView> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
         if (state is AuthLoggedOutState) {
-          final closeDialog = _closeDialogHandle;
+          /* final closeDialog = _closeDialogHandle;
 
           if (!state.isLoading && closeDialog != null) {
             closeDialog();
@@ -50,7 +50,9 @@ class _LoginViewState extends State<LoginView> {
               context: context,
               text: "Loading...",
             );
-          }
+          } */
+
+
 
           if (state.exception is InvalidCredentialsException) {
             await showErrorDialog(

@@ -1,39 +1,44 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:notes/services/auth/auth_user.dart';
 
 @immutable
-abstract class AuthState{
+abstract class AuthState {
   const AuthState();
 }
 
-class AuthLoadingState extends AuthState{
-  const AuthLoadingState();
+class AuthUninitializedState extends AuthState {
+  const AuthUninitializedState();
 }
 
-class AuthLoggedInState extends AuthState{
+class AuthLoggedInState extends AuthState {
   final AuthUser user;
   const AuthLoggedInState({required this.user});
 }
 
-class AuthLogInFailureState extends AuthState{
-  final Exception exception;
-  const AuthLogInFailureState({required this.exception});
+class AuthLoggedOutState extends AuthState with EquatableMixin{
+  final Exception? exception;
+  final bool isLoading;
+  const AuthLoggedOutState({
+    required this.isLoading,
+    required this.exception,
+  });
+  
+  @override
+  List<Object?> get props => [exception,isLoading];
 }
 
-class AuthLoggedOutState extends AuthState{
-  const AuthLoggedOutState();
+class AuthNotRegisteredState extends AuthState {
+  final Exception? exception;
+  final bool isLoading;
+  const AuthNotRegisteredState({
+    required this.isLoading,
+    required this.exception,
+  });
+  
+  List<Object?> get props => [exception,isLoading];
 }
 
-class AuthEmailNotVerifiedState extends AuthState{
+class AuthEmailNotVerifiedState extends AuthState {
   const AuthEmailNotVerifiedState();
-}
-
-class AuthLogOutFailureState extends AuthState{
-  final Exception exception;
-  const AuthLogOutFailureState({required this.exception});
-}
-
-class AuthRegisterFailureState extends AuthState{
-  final Exception exception;
-  const AuthRegisterFailureState({required this.exception});
 }

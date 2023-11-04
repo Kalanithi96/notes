@@ -30,3 +30,13 @@ class AuthEventRegister extends AuthEvent {
 class AuthEventLogOut extends AuthEvent {
   const AuthEventLogOut();
 }
+
+class AuthEventSendVerificationEmail extends AuthEvent {
+  const AuthEventSendVerificationEmail();
+}
+class AuthEventNavToRegister extends AuthEvent {
+  const AuthEventNavToRegister();
+}
+class AuthEventNavToLogin extends AuthEvent {
+  const AuthEventNavToLogin();
+}

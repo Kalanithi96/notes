@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:notes/extensions/filter.dart';
+import 'package:notes/services/auth/auth_service.dart';
 import 'package:notes/services/crud/crud_provider.dart';
 import 'package:notes/constants/sqlite_storage_constants.dart';
 import 'package:notes/services/crud/sqlite_storage_exceptions.dart';
@@ -121,9 +122,11 @@ class SqliteCrudProvider implements CrudProvider{
     if (results.isNotEmpty) {
       throw UserAlreadyExists();
     }
-    final userId = await db.insert(
+    final userId = AuthService.firebase().currentUser!.id;
+    await db.insert(
       userTable,
       {
+        idColumn: userId,
         emailColumn: email.toLowerCase(),
       },
     );
@@ -173,20 +176,14 @@ class SqliteCrudProvider implements CrudProvider{
   }
 
   @override
-  Future<DatabaseNote> createNote({required covariant DatabaseUser owner}) async {
+  Future<DatabaseNote> createNote({required covariant String owner}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-
-    // Make sure owner exists in the database with correct id
-    final dbUser = await getUser(email: owner.email);
-    if (dbUser != owner) {
-      throw UserMismatch();
-    }
 
     const text = '';
     const title = '';
     final noteId = await db.insert(notesTable, {
-      userIdColumn: owner.id,
+      userIdColumn: owner,
       textColumn: text,
       titleColumn: title,
       isSyncedWithCloudColumn: 1,
@@ -194,7 +191,7 @@ class SqliteCrudProvider implements CrudProvider{
 
     final newNote = DatabaseNote(
       documentId: noteId,
-      ownerId: owner.id,
+      ownerId: owner,
       text: text,
       title: title,
       isSyncedWithCloud: true,
@@ -330,7 +327,7 @@ class SqliteCrudProvider implements CrudProvider{
 
 @immutable
 class DatabaseUser {
-  final int id;
+  final String id;
   final String email;
   const DatabaseUser({
     required this.id,
@@ -338,7 +335,7 @@ class DatabaseUser {
   });
 
   DatabaseUser.fromRow(Map<String, Object?> map)
-      : id = map[idColumn] as int,
+      : id = map[idColumn] as String,
         email = map[emailColumn] as String;
 
   @override

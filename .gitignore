@@ -138,7 +138,6 @@ app.*.symbols
 !.vscode/settings.json
 
 /test/crud_test.dart
-/android
 /ios
 /linux
 /mac
